@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://master-smp.netlify.app/sitemap.xml
