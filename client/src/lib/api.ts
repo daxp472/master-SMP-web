@@ -57,38 +57,82 @@ const wait = <T>(value: T, ms = 220): Promise<T> =>
   new Promise((r) => setTimeout(() => r(value), ms));
 
 export const api = {
-  getProducts: (category?: string): Promise<Product[]> =>
-    USE_DEMO
-      ? wait(
-          category
-            ? demoData.products.filter((p: Product) => p.category === category)
-            : demoData.products,
-        )
-      : request<Product[]>(
-          `/products${category ? `?category=${category}` : ""}`,
-        ),
+  getProducts: async (category?: string): Promise<Product[]> => {
+    if (USE_DEMO) {
+      return wait(
+        category
+          ? demoData.products.filter((p: Product) => p.category === category)
+          : demoData.products,
+      );
+    }
+    try {
+      const data = await request<Product[]>(
+        `/products${category ? `?category=${category}` : ""}`,
+      );
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+      console.warn("[API] Backend returned empty product list. Falling back to demo data.");
+      return category
+        ? demoData.products.filter((p: Product) => p.category === category)
+        : demoData.products;
+    } catch (err) {
+      console.warn("[API] Backend API unreachable, falling back to demo data:", err);
+      return category
+        ? demoData.products.filter((p: Product) => p.category === category)
+        : demoData.products;
+    }
+  },
 
-  getProduct: (slug: string): Promise<Product> => {
+  getProduct: async (slug: string): Promise<Product> => {
     if (USE_DEMO) {
       const p = demoData.products.find((p: Product) => p.slug === slug);
       if (!p) return Promise.reject(new ApiClientError("Product not found", "NOT_FOUND", 404));
       return wait(p);
     }
-    return request<Product>(`/products/${slug}`);
+    try {
+      return await request<Product>(`/products/${slug}`);
+    } catch (err) {
+      console.warn("[API] Backend product fetch failed, searching demo data:", err);
+      const p = demoData.products.find((p: Product) => p.slug === slug);
+      if (!p) throw err;
+      return p;
+    }
   },
 
-  getCategories: (): Promise<Category[]> =>
-    USE_DEMO ? wait(demoData.categories) : request<Category[]>(`/categories`),
+  getCategories: async (): Promise<Category[]> => {
+    if (USE_DEMO) return wait(demoData.categories);
+    try {
+      const data = await request<Category[]>(`/categories`);
+      if (Array.isArray(data) && data.length > 0) return data;
+      return demoData.categories;
+    } catch (err) {
+      console.warn("[API] Backend categories fetch failed, falling back to demo data:", err);
+      return demoData.categories;
+    }
+  },
 
-  getServerStatus: (): Promise<ServerStatus> =>
-    USE_DEMO
-      ? wait(demoData.serverStatus)
-      : request<ServerStatus>(`/server/status`),
+  getServerStatus: async (): Promise<ServerStatus> => {
+    if (USE_DEMO) return wait(demoData.serverStatus);
+    try {
+      return await request<ServerStatus>(`/server/status`);
+    } catch (err) {
+      console.warn("[API] Backend server status fetch failed, falling back to demo status:", err);
+      return demoData.serverStatus;
+    }
+  },
 
-  getRecentPurchases: (): Promise<RecentPurchase[]> =>
-    USE_DEMO
-      ? wait(demoData.recentPurchases)
-      : request<RecentPurchase[]>(`/purchases/recent`),
+  getRecentPurchases: async (): Promise<RecentPurchase[]> => {
+    if (USE_DEMO) return wait(demoData.recentPurchases);
+    try {
+      const data = await request<RecentPurchase[]>(`/purchases/recent`);
+      if (Array.isArray(data) && data.length > 0) return data;
+      return demoData.recentPurchases;
+    } catch (err) {
+      console.warn("[API] Backend recent purchases fetch failed, falling back to demo data:", err);
+      return demoData.recentPurchases;
+    }
+  },
 
   // Checkout
   createOrder: (body: {

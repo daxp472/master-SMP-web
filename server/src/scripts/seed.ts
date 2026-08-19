@@ -7,6 +7,8 @@ import { Admin } from "../models/Admin.js";
 import { Coupon } from "../models/Coupon.js";
 import { Setting } from "../models/Setting.js";
 import { Announcement } from "../models/Announcement.js";
+import { Order } from "../models/Order.js";
+import { Purchase } from "../models/Purchase.js";
 
 async function seed() {
   console.log("[Seed] Starting MongoDB database seed...");
@@ -18,6 +20,8 @@ async function seed() {
   await Coupon.deleteMany({});
   await Setting.deleteMany({});
   await Announcement.deleteMany({});
+  await Order.deleteMany({});
+  await Purchase.deleteMany({});
 
   // 1. Seed Categories
   const categories = await Category.create([
@@ -221,6 +225,7 @@ async function seed() {
       currency: "USD",
       sortOrder: 4,
       metadata: { currentRank: "Hero", targetRank: "Legend" },
+      fulfillment: { type: "minecraft_command", commandTemplate: "lp user {username} parent set legend" },
     },
   ];
 
@@ -433,7 +438,66 @@ async function seed() {
     active: true,
   });
 
-  // 8. Seed Default Admin User
+  // 8. Seed Sample Recent Purchases
+  const sampleProduct = await Product.findOne({ slug: "legend" });
+  const sampleKey = await Product.findOne({ slug: "legendary-key" });
+  const sampleCoins = await Product.findOne({ slug: "25000-coins" });
+
+  if (sampleProduct && sampleKey && sampleCoins) {
+    const dummyOrder = await Order.create({
+      orderNumber: "ORD-SEED-001",
+      minecraftUsername: "AuraKing",
+      platform: "java",
+      items: [{
+        productId: sampleProduct._id,
+        name: sampleProduct.name,
+        slug: sampleProduct.slug,
+        quantity: 1,
+        unitPrice: sampleProduct.price,
+        total: sampleProduct.price,
+        category: sampleProduct.category,
+      }],
+      subtotal: sampleProduct.price,
+      discount: 0,
+      total: sampleProduct.price,
+      paymentStatus: "PAID",
+      fulfillmentStatus: "DELIVERED",
+      paymentProvider: "mock",
+      idempotencyKey: "seed_idem_001",
+    });
+
+    await Purchase.create([
+      {
+        orderId: dummyOrder._id,
+        minecraftUsername: "AuraKing",
+        productId: sampleProduct._id,
+        productName: "Legend Rank",
+        category: "ranks",
+        amount: 17.99,
+        deliveredAt: new Date(Date.now() - 1000 * 60 * 12),
+      },
+      {
+        orderId: dummyOrder._id,
+        minecraftUsername: "ProGamer99",
+        productId: sampleKey._id,
+        productName: "Legendary Key x5",
+        category: "crate-keys",
+        amount: 4.25,
+        deliveredAt: new Date(Date.now() - 1000 * 60 * 35),
+      },
+      {
+        orderId: dummyOrder._id,
+        minecraftUsername: "ViperDragon",
+        productId: sampleCoins._id,
+        productName: "25,000 Coins",
+        category: "coins",
+        amount: 19.99,
+        deliveredAt: new Date(Date.now() - 1000 * 60 * 90),
+      },
+    ]);
+  }
+
+  // 9. Seed Default Admin User
   let adminUser = await User.findOne({ email: "admin@master-smp.net" });
   if (!adminUser) {
     const passwordHash = await argon2.hash("AdminPass123!");

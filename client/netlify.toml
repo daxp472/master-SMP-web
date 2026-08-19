@@ -1,0 +1,16 @@
+# Netlify Configuration for Master SMP Client App
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Redirects for Single Page Application (SPA) Routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Cache static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
