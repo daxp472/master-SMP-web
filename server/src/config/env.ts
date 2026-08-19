@@ -27,10 +27,11 @@ export const env = {
   // Discord Notifications
   DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL || "",
 
-  MINECRAFT_SERVER_IP: process.env.MINECRAFT_SERVER_IP || "aurax.play.hosting:24295",
+  MINECRAFT_SERVER_IP: process.env.MINECRAFT_SERVER_IP || "aurax.play.hosting",
   MINECRAFT_RCON_HOST: process.env.MINECRAFT_RCON_HOST || "aurax.play.hosting",
-  MINECRAFT_RCON_PORT: parseInt(process.env.MINECRAFT_RCON_PORT || "24295", 10),
+  MINECRAFT_RCON_PORT: parseInt(process.env.MINECRAFT_RCON_PORT || "4161", 10),
   MINECRAFT_RCON_PASSWORD: process.env.MINECRAFT_RCON_PASSWORD || "",
+  MINECRAFT_RCON_USERNAME: process.env.MINECRAFT_RCON_USERNAME || "masterweb",
 
   PUBLIC_SERVER_NAME: process.env.PUBLIC_SERVER_NAME || "Master SMP",
   PUBLIC_WEBSITE_URL: process.env.PUBLIC_WEBSITE_URL || "https://master-smp.netlify.app",
