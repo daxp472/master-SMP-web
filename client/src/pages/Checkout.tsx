@@ -31,8 +31,10 @@ export default function Checkout() {
   const [agree, setAgree] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const discount = couponApplied?.discount ?? 0;
-  const total = Math.max(0, subtotal - discount);
+  const autoDiscount = subtotal >= 15 ? Number((subtotal * 0.05).toFixed(2)) : 0;
+  const couponDiscount = couponApplied?.discount ?? 0;
+  const totalDiscount = Number((autoDiscount + couponDiscount).toFixed(2));
+  const total = Math.max(0, Number((subtotal - totalDiscount).toFixed(2)));
 
   const validateUsername = (v: string) => {
     if (!v) return "Minecraft username is required";
@@ -51,15 +53,15 @@ export default function Checkout() {
   const applyCoupon = async () => {
     if (!coupon) return;
     try {
-      const c = await api.validateCoupon(coupon, total);
+      const c = await api.validateCoupon(coupon, subtotal);
       const d =
         c.discountType === "percentage"
-          ? (total * c.discountValue) / 100
-          : c.discountValue;
+          ? Number(((subtotal * c.discountValue) / 100).toFixed(2))
+          : Math.min(subtotal, c.discountValue);
       setCouponApplied({ code: c.code, discount: d });
-      addToast("Coupon applied successfully!", "success");
-    } catch {
-      addToast("Invalid or expired coupon code", "error");
+      addToast(`Coupon "${c.code}" applied successfully!`, "success");
+    } catch (err: any) {
+      addToast(err?.message || "Invalid or expired coupon code", "error");
     }
   };
 
@@ -304,7 +306,7 @@ export default function Checkout() {
               {couponApplied && (
                 <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs font-bold text-emerald-300 flex items-center justify-between">
                   <span>Coupon "{couponApplied.code}" Applied!</span>
-                  <span>−{formatMoney(discount)}</span>
+                  <span>−{formatMoney(couponDiscount)}</span>
                 </div>
               )}
 
@@ -328,7 +330,8 @@ export default function Checkout() {
                 <Row label="Platform" value={platform.toUpperCase()} />
                 <Row label="Total Items" value={`${items.length} product(s)`} />
                 <Row label="Subtotal" value={formatMoney(subtotal)} />
-                {discount > 0 && <Row label="Coupon Discount" value={`−${formatMoney(discount)}`} accent />}
+                {autoDiscount > 0 && <Row label="5% Weekend Special (Orders Over $15)" value={`−${formatMoney(autoDiscount)}`} accent />}
+                {couponApplied && <Row label={`Coupon Discount (${couponApplied.code})`} value={`−${formatMoney(couponDiscount)}`} accent />}
                 <div className="flex justify-between border-t border-slate-800 pt-3 text-lg font-black text-white">
                   <span>Total Amount</span>
                   <span className="text-emerald-400 font-display">{formatMoney(total)}</span>
@@ -377,9 +380,14 @@ export default function Checkout() {
               <div className="flex justify-between border-t border-slate-800 pt-2 text-slate-400 font-medium">
                 <span>Subtotal</span><span>{formatMoney(subtotal)}</span>
               </div>
-              {discount > 0 && (
+              {autoDiscount > 0 && (
+                <div className="flex justify-between text-cyan-300 font-bold">
+                  <span>5% Weekend Bonus (Over $15)</span><span>−{formatMoney(autoDiscount)}</span>
+                </div>
+              )}
+              {couponApplied && (
                 <div className="flex justify-between text-emerald-300 font-bold">
-                  <span>Discount</span><span>−{formatMoney(discount)}</span>
+                  <span>Coupon ({couponApplied.code})</span><span>−{formatMoney(couponDiscount)}</span>
                 </div>
               )}
               <div className="flex justify-between border-t border-slate-800 pt-2 text-base font-black text-white">

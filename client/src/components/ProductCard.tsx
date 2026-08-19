@@ -123,19 +123,25 @@ export function ProductArt({ product }: { product: Product }) {
 }
 
 export function ProductCard({ product }: { product: Product }) {
-  const { add } = useCart();
-  const { toast } = useToast();
+  const { items, add, remove } = useCart();
+  const { addToast } = useToast();
   const price = product.salePrice ?? product.price;
+  const isInCart = items.some((i) => i.productId === product._id);
 
-  const onAdd = () => {
-    add({
-      productId: product._id,
-      name: product.name,
-      slug: product.slug,
-      price,
-      category: product.category,
-    });
-    toast(`${product.name} added to cart!`, "success");
+  const onToggleCart = () => {
+    if (isInCart) {
+      remove(product._id);
+      addToast(`Removed ${product.name} from cart`, "info");
+    } else {
+      add({
+        productId: product._id,
+        name: product.name,
+        slug: product.slug,
+        price,
+        category: product.category,
+      });
+      addToast(`${product.name} added to cart!`, "success");
+    }
   };
 
   return (
@@ -195,9 +201,18 @@ export function ProductCard({ product }: { product: Product }) {
             <Link to={`/product/${product.slug}`} className="btn-outline text-xs">
               View Perks
             </Link>
-            <button onClick={onAdd} className="btn-primary text-xs">
-              Add to Cart
-            </button>
+            {isInCart ? (
+              <button
+                onClick={onToggleCart}
+                className="rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40 px-3 py-2 text-xs font-black uppercase tracking-wider hover:bg-rose-500 hover:text-white transition-all"
+              >
+                Remove from Cart
+              </button>
+            ) : (
+              <button onClick={onToggleCart} className="btn-primary text-xs">
+                Add to Cart
+              </button>
+            )}
           </div>
         </div>
       </div>

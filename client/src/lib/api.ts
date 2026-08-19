@@ -164,13 +164,18 @@ export const api = {
     return request<Order>(`/orders/${orderNumber}`);
   },
 
-  validateCoupon: (code: string, orderTotal: number): Promise<Coupon> =>
-    USE_DEMO
-      ? wait(demoData.validateCoupon(code, orderTotal))
-      : request<Coupon>(`/coupons/validate`, {
-          method: "POST",
-          body: JSON.stringify({ code, orderTotal }),
-        }),
+  validateCoupon: async (code: string, orderTotal: number): Promise<Coupon> => {
+    if (USE_DEMO) return wait(demoData.validateCoupon(code, orderTotal));
+    try {
+      return await request<Coupon>(`/coupons/validate`, {
+        method: "POST",
+        body: JSON.stringify({ code, orderTotal }),
+      });
+    } catch (err) {
+      console.warn("[API] Backend validateCoupon failed, trying demoData fallback:", err);
+      return demoData.validateCoupon(code, orderTotal);
+    }
+  },
 
   // Auth
   login: (email: string, password: string): Promise<{ user: User; token: string }> =>

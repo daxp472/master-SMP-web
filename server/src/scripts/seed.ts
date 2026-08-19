@@ -305,102 +305,35 @@ async function seed() {
 
   await Product.create(coinBundles);
 
-  // 5. Seed 4 Crate Key Products
+  // 5. Seed Crate Key Bundle Products (1x, 3x, 5x, 10x [2+ Bonus])
   const crateKeys = [
-    {
-      name: "Vote Key",
-      slug: "vote-key",
-      category: "crate-keys",
-      description: "Standard vote crate key with common to rare SMP rewards.",
-      image: "https://placehold.co/400x300/0f172a/10b981?text=VOTE+KEY",
-      price: 0.15,
-      sortOrder: 1,
-      metadata: {
-        crateId: "vote",
-        keyName: "Vote Key",
-        quantity: 1,
-        bundles: [
-          { count: 1, price: 0.15 },
-          { count: 3, price: 0.39 },
-          { count: 5, price: 0.60 },
-          { count: 10, price: 1.10 },
-        ],
-        rewardsPreview: ["Diamond Gear", "Exp Bottles", "Claim Blocks", "Golden Apples"],
-      },
-      fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} vote {quantity}" },
-    },
-    {
-      name: "Rare Key",
-      slug: "rare-key",
-      category: "crate-keys",
-      description: "Rare crate key with enchanted tools, spawners, and coin pouches.",
-      image: "https://placehold.co/400x300/0f172a/3b82f6?text=RARE+KEY",
-      price: 0.39,
-      sortOrder: 2,
-      metadata: {
-        crateId: "rare",
-        keyName: "Rare Key",
-        quantity: 1,
-        bundles: [
-          { count: 1, price: 0.39 },
-          { count: 3, price: 0.99 },
-          { count: 5, price: 1.60 },
-          { count: 10, price: 2.99 },
-        ],
-        rewardsPreview: ["Netherite Ingot", "Pig Spawner", "5,000 Coins", "Sharpness V Book"],
-      },
-      fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} rare {quantity}" },
-    },
-    {
-      name: "Epic Key",
-      slug: "epic-key",
-      category: "crate-keys",
-      description: "Epic crate key featuring high-tier gear and rare cosmetics.",
-      image: "https://placehold.co/400x300/0f172a/8b5cf6?text=EPIC+KEY",
-      price: 0.65,
-      sortOrder: 3,
-      featured: true,
-      metadata: {
-        crateId: "epic",
-        keyName: "Epic Key",
-        quantity: 1,
-        bundles: [
-          { count: 1, price: 0.65 },
-          { count: 3, price: 1.69 },
-          { count: 5, price: 2.75 },
-          { count: 10, price: 4.99 },
-        ],
-        rewardsPreview: ["Full Netherite Armor", "Cow Spawner", "15,000 Coins", "Fly Voucher (3h)"],
-      },
-      fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} epic {quantity}" },
-    },
-    {
-      name: "Legendary Key",
-      slug: "legendary-key",
-      category: "crate-keys",
-      description: "The pinnacle crate key with mythical weapons, rank vouchers, and custom relics.",
-      image: "https://placehold.co/400x300/0f172a/ef4444?text=LEGENDARY+KEY",
-      price: 1.00,
-      sortOrder: 4,
-      bestValue: true,
-      metadata: {
-        crateId: "legendary",
-        keyName: "Legendary Key",
-        quantity: 1,
-        bundles: [
-          { count: 1, price: 1.00 },
-          { count: 3, price: 2.60 },
-          { count: 5, price: 4.25 },
-          { count: 10, price: 7.99 },
-        ],
-        rewardsPreview: ["Legendary Sword", "Iron Golem Spawner", "50,000 Coins", "Rank Upgrade Voucher"],
-      },
-      fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} legendary {quantity}" },
-    },
+    // Vote Keys
+    { name: "1x Vote Crate Key", slug: "1x-vote-key", category: "crate-keys", description: "Single vote crate key.", image: "https://placehold.co/400x300/0f172a/10b981?text=1X+VOTE+KEY", price: 0.15, sortOrder: 1, metadata: { crateId: "vote", keyName: "Vote Key", quantity: 1 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} vote 1" } },
+    { name: "3x Vote Crate Key", slug: "3x-vote-key", category: "crate-keys", description: "Bundle of 3 vote crate keys.", image: "https://placehold.co/400x300/0f172a/10b981?text=3X+VOTE+KEY", price: 0.39, sortOrder: 2, metadata: { crateId: "vote", keyName: "Vote Key", quantity: 3 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} vote 3" } },
+    { name: "5x Vote Crate Key", slug: "5x-vote-key", category: "crate-keys", description: "Bundle of 5 vote crate keys.", image: "https://placehold.co/400x300/0f172a/10b981?text=5X+VOTE+KEY", price: 0.60, sortOrder: 3, metadata: { crateId: "vote", keyName: "Vote Key", quantity: 5 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} vote 5" } },
+    { name: "10x Vote Crate Key [2+ Bonus]", slug: "10x-vote-key", category: "crate-keys", description: "Mega pack of 10 vote crate keys + 2 FREE bonus keys!", image: "https://placehold.co/400x300/0f172a/10b981?text=10X+VOTE+KEY", price: 1.10, featured: true, sortOrder: 4, metadata: { crateId: "vote", keyName: "Vote Key", quantity: 12 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} vote 12" } },
+
+    // Rare Keys
+    { name: "1x Rare Crate Key", slug: "1x-rare-key", category: "crate-keys", description: "Single rare crate key.", image: "https://placehold.co/400x300/0f172a/3b82f6?text=1X+RARE+KEY", price: 0.39, sortOrder: 5, metadata: { crateId: "rare", keyName: "Rare Key", quantity: 1 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} rare 1" } },
+    { name: "3x Rare Crate Key", slug: "3x-rare-key", category: "crate-keys", description: "Bundle of 3 rare crate keys.", image: "https://placehold.co/400x300/0f172a/3b82f6?text=3X+RARE+KEY", price: 0.99, sortOrder: 6, metadata: { crateId: "rare", keyName: "Rare Key", quantity: 3 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} rare 3" } },
+    { name: "5x Rare Crate Key", slug: "5x-rare-key", category: "crate-keys", description: "Bundle of 5 rare crate keys.", image: "https://placehold.co/400x300/0f172a/3b82f6?text=5X+RARE+KEY", price: 1.60, sortOrder: 7, metadata: { crateId: "rare", keyName: "Rare Key", quantity: 5 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} rare 5" } },
+    { name: "10x Rare Crate Key [2+ Bonus]", slug: "10x-rare-key", category: "crate-keys", description: "Mega pack of 10 rare crate keys + 2 FREE bonus keys!", image: "https://placehold.co/400x300/0f172a/3b82f6?text=10X+RARE+KEY", price: 2.99, featured: true, sortOrder: 8, metadata: { crateId: "rare", keyName: "Rare Key", quantity: 12 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} rare 12" } },
+
+    // Epic Keys
+    { name: "1x Epic Crate Key", slug: "1x-epic-key", category: "crate-keys", description: "Single epic crate key.", image: "https://placehold.co/400x300/0f172a/8b5cf6?text=1X+EPIC+KEY", price: 0.65, sortOrder: 9, metadata: { crateId: "epic", keyName: "Epic Key", quantity: 1 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} epic 1" } },
+    { name: "3x Epic Crate Key", slug: "3x-epic-key", category: "crate-keys", description: "Bundle of 3 epic crate keys.", image: "https://placehold.co/400x300/0f172a/8b5cf6?text=3X+EPIC+KEY", price: 1.69, sortOrder: 10, metadata: { crateId: "epic", keyName: "Epic Key", quantity: 3 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} epic 3" } },
+    { name: "5x Epic Crate Key", slug: "5x-epic-key", category: "crate-keys", description: "Bundle of 5 epic crate keys.", image: "https://placehold.co/400x300/0f172a/8b5cf6?text=5X+EPIC+KEY", price: 2.75, sortOrder: 11, metadata: { crateId: "epic", keyName: "Epic Key", quantity: 5 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} epic 5" } },
+    { name: "10x Epic Crate Key [2+ Bonus]", slug: "10x-epic-key", category: "crate-keys", description: "Mega pack of 10 epic crate keys + 2 FREE bonus keys!", image: "https://placehold.co/400x300/0f172a/8b5cf6?text=10X+EPIC+KEY", price: 4.99, featured: true, sortOrder: 12, metadata: { crateId: "epic", keyName: "Epic Key", quantity: 12 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} epic 12" } },
+
+    // Legendary Keys
+    { name: "1x Legendary Crate Key", slug: "1x-legendary-key", category: "crate-keys", description: "Single legendary crate key.", image: "https://placehold.co/400x300/0f172a/ef4444?text=1X+LEGENDARY+KEY", price: 1.00, sortOrder: 13, metadata: { crateId: "legendary", keyName: "Legendary Key", quantity: 1 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} legendary 1" } },
+    { name: "3x Legendary Crate Key", slug: "3x-legendary-key", category: "crate-keys", description: "Bundle of 3 legendary crate keys.", image: "https://placehold.co/400x300/0f172a/ef4444?text=3X+LEGENDARY+KEY", price: 2.60, sortOrder: 14, metadata: { crateId: "legendary", keyName: "Legendary Key", quantity: 3 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} legendary 3" } },
+    { name: "5x Legendary Crate Key", slug: "5x-legendary-key", category: "crate-keys", description: "Bundle of 5 legendary crate keys.", image: "https://placehold.co/400x300/0f172a/ef4444?text=5X+LEGENDARY+KEY", price: 4.25, sortOrder: 15, metadata: { crateId: "legendary", keyName: "Legendary Key", quantity: 5 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} legendary 5" } },
+    { name: "10x Legendary Crate Key [2+ Bonus]", slug: "10x-legendary-key", category: "crate-keys", description: "Ultimate pack of 10 legendary crate keys + 2 FREE bonus keys!", image: "https://placehold.co/400x300/0f172a/ef4444?text=10X+LEGENDARY+KEY", price: 7.99, featured: true, bestValue: true, sortOrder: 16, metadata: { crateId: "legendary", keyName: "Legendary Key", quantity: 12 }, fulfillment: { type: "minecraft_command", commandTemplate: "crates key give {username} legendary 12" } },
   ];
 
   await Product.create(crateKeys);
-  console.log(`[Seed] Created crate key products.`);
+  console.log(`[Seed] Created ${crateKeys.length} crate key bundle products.`);
 
   // 6. Seed Coupons
   await Coupon.create([

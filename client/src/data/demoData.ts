@@ -201,48 +201,48 @@ export const demoData = {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     })),
-    // --- Crate Keys (exactly 4 key types) ---
+    // --- Crate Keys (1x, 3x, 5x, 10x bundle packages) ---
     ...(
       [
-        { id: 1, name: "Vote Key", slug: "vote-key", price: 0.15, crateId: "vote", color: "#10b981", rewards: ["Diamond Gear", "Exp Bottles", "Claim Blocks", "Golden Apples"] },
-        { id: 2, name: "Rare Key", slug: "rare-key", price: 0.39, crateId: "rare", color: "#38bdf8", rewards: ["Netherite Ingot", "Pig Spawner", "5,000 Coins", "Sharpness V Book"] },
-        { id: 3, name: "Epic Key", slug: "epic-key", price: 0.65, crateId: "epic", color: "#a855f7", rewards: ["Full Netherite Armor", "Cow Spawner", "15,000 Coins", "Fly Voucher (3h)"] },
-        { id: 4, name: "Legendary Key", slug: "legendary-key", price: 1.00, crateId: "legendary", color: "#f43f5e", rewards: ["Legendary Sword", "Iron Golem Spawner", "50,000 Coins", "Rank Upgrade Voucher"] },
+        { id: 1, name: "Vote Key", slug: "vote-key", price: 0.15, crateId: "vote", color: "#10b981" },
+        { id: 2, name: "Rare Key", slug: "rare-key", price: 0.39, crateId: "rare", color: "#38bdf8" },
+        { id: 3, name: "Epic Key", slug: "epic-key", price: 0.65, crateId: "epic", color: "#a855f7" },
+        { id: 4, name: "Legendary Key", slug: "legendary-key", price: 1.00, crateId: "legendary", color: "#f43f5e" },
       ] as const
-    ).map((k) => ({
-      _id: `crate-key-${k.id}`,
-      name: k.name,
-      slug: k.slug,
-      category: "crate-keys" as const,
-      description: `Official ${k.name} for Master SMP spawn crate rewards.`,
-      image: "",
-      price: k.price,
-      salePrice: null,
-      currency: "USD",
-      active: true,
-      featured: k.id === 3,
-      bestValue: k.id === 4,
-      sortOrder: k.id,
-      metadata: {
-        crateId: k.crateId,
-        keyName: k.name,
-        color: k.color,
-        quantity: 1,
-        bundles: [
-          { count: 1, price: k.price },
-          { count: 3, price: Number((k.price * 2.6).toFixed(2)) },
-          { count: 5, price: Number((k.price * 4.25).toFixed(2)) },
-          { count: 10, price: Number((k.price * 7.8).toFixed(2)) },
-        ],
-        rewardsPreview: k.rewards,
-      },
-      fulfillment: {
-        type: "minecraft_command" as const,
-        commandTemplate: `crates key give {username} ${k.crateId} {quantity}`,
-      },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    })),
+    ).flatMap((k) =>
+      [
+        { count: 1, mult: 1, bonus: 0, tag: "" },
+        { count: 3, mult: 2.6, bonus: 0, tag: "" },
+        { count: 5, mult: 4.25, bonus: 0, tag: "" },
+        { count: 10, mult: 7.8, bonus: 2, tag: " [2+ Bonus]" },
+      ].map((b, idx) => ({
+        _id: `crate-key-${k.id}-${b.count}`,
+        name: `${b.count}x ${k.name}${b.tag}`,
+        slug: `${b.count}x-${k.slug}`,
+        category: "crate-keys" as const,
+        description: `Bundle of ${b.count} ${k.name}s${b.bonus ? ` plus ${b.bonus} FREE bonus keys` : ""}.`,
+        image: "",
+        price: Number((k.price * b.mult).toFixed(2)),
+        salePrice: null,
+        currency: "USD",
+        active: true,
+        featured: b.count === 10,
+        bestValue: b.count === 10 && k.id === 4,
+        sortOrder: k.id * 10 + idx,
+        metadata: {
+          crateId: k.crateId,
+          keyName: k.name,
+          color: k.color,
+          quantity: b.count + b.bonus,
+        },
+        fulfillment: {
+          type: "minecraft_command" as const,
+          commandTemplate: `crates key give {username} ${k.crateId} ${b.count + b.bonus}`,
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }))
+    ),
   ] as Product[],
 
   serverStatus: {
