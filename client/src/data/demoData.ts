@@ -387,23 +387,34 @@ export const demoData = {
   },
 
   validateCoupon: (code: string, _orderTotal: number) => {
-    if (code.toUpperCase() === "MASTER10") {
+    const cleanCode = code.trim().toUpperCase();
+    const map: Record<string, { type: "percentage" | "fixed"; value: number }> = {
+      MASTER20: { type: "percentage", value: 20 },
+      WELCOME50: { type: "percentage", value: 50 },
+      MINEPEAK10: { type: "percentage", value: 10 },
+      DONUT100: { type: "fixed", value: 1.0 },
+      SMP2026: { type: "percentage", value: 15 },
+      MASTER10: { type: "percentage", value: 10 },
+    };
+
+    const found = map[cleanCode];
+    if (found) {
       return {
-        _id: "coupon-1",
-        code: "MASTER10",
-        discountType: "percentage" as const,
-        discountValue: 10,
-        maxUses: 100,
+        _id: `coupon-${cleanCode}`,
+        code: cleanCode,
+        discountType: found.type,
+        discountValue: found.value,
+        maxUses: 1000,
         perUserLimit: 1,
         minimumOrder: 0,
         expiration: null,
         active: true,
         applicableProducts: [],
         applicableCategories: [] as CategorySlug[],
-        uses: 12,
+        uses: 5,
       };
     }
-    throw new Error("Invalid coupon code");
+    throw new Error("Invalid or inactive coupon code");
   },
 
   login: (email: string, _password: string) => ({

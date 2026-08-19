@@ -12,9 +12,24 @@ export const env = {
   PAYMENT_SECRET: process.env.PAYMENT_SECRET || "sk_test_mock",
   PAYMENT_WEBHOOK_SECRET: process.env.PAYMENT_WEBHOOK_SECRET || "whsec_mock",
 
-  MINECRAFT_SERVER_IP: process.env.MINECRAFT_SERVER_IP || "play.master-smp.net",
-  MINECRAFT_RCON_HOST: process.env.MINECRAFT_RCON_HOST || "127.0.0.1",
-  MINECRAFT_RCON_PORT: parseInt(process.env.MINECRAFT_RCON_PORT || "25575", 10),
+  // Stripe Credentials
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || "",
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || "",
+
+  // Razorpay Credentials (UPI / Cards India)
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || "",
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || "",
+
+  // PayPal Credentials
+  PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID || "",
+  PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET || "",
+
+  // Discord Notifications
+  DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL || "",
+
+  MINECRAFT_SERVER_IP: process.env.MINECRAFT_SERVER_IP || "aurax.play.hosting:24295",
+  MINECRAFT_RCON_HOST: process.env.MINECRAFT_RCON_HOST || "aurax.play.hosting",
+  MINECRAFT_RCON_PORT: parseInt(process.env.MINECRAFT_RCON_PORT || "24295", 10),
   MINECRAFT_RCON_PASSWORD: process.env.MINECRAFT_RCON_PASSWORD || "",
 
   PUBLIC_SERVER_NAME: process.env.PUBLIC_SERVER_NAME || "Master SMP",

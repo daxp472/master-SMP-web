@@ -6,6 +6,7 @@ import { siteConfig } from "@/lib/siteConfig";
 import { useSeo } from "@/lib/seo";
 import { ServerIpCard } from "@/components/ServerIpCard";
 import { ProductCard } from "@/components/ProductCard";
+import { RankComparisonMatrix } from "@/components/RankComparisonMatrix";
 import { timeAgo } from "@/lib/utils";
 
 export default function Home() {
@@ -119,6 +120,11 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Rank Comparison Matrix Section */}
+      <section className="container-page py-6">
+        <RankComparisonMatrix />
+      </section>
 
       {/* Why Choose Master SMP Store */}
       <section className="container-page py-6">

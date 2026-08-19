@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useSeo } from "@/lib/seo";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductCardSkeleton } from "@/components/ui/Skeleton";
 import { ErrorState } from "@/components/ui/States";
+import { CrateRewardsModal } from "@/components/CrateRewardsModal";
 import type { CategorySlug } from "@/types";
-import { AlertTriangle, Sparkles } from "lucide-react";
+import { AlertTriangle, Sparkles, KeyRound } from "lucide-react";
 
 const titles: Record<CategorySlug, { title: string; desc: string }> = {
   ranks: { title: "Ranks", desc: "Permanent player ranks (Knight $1.49, Elite $3.99, Pro $7.99, Hero $13.99, Legend $19.99). Players can only own 1 rank." },
@@ -15,6 +17,7 @@ const titles: Record<CategorySlug, { title: string; desc: string }> = {
 };
 
 export default function CategoryPage({ category }: { category: CategorySlug }) {
+  const [selectedCrate, setSelectedCrate] = useState<string | null>(null);
   const meta = titles[category];
   useSeo({
     title: `${meta.title} · Store`,
@@ -28,6 +31,10 @@ export default function CategoryPage({ category }: { category: CategorySlug }) {
 
   return (
     <div className="container-page py-10 space-y-6">
+      {selectedCrate && (
+        <CrateRewardsModal crateId={selectedCrate} onClose={() => setSelectedCrate(null)} />
+      )}
+
       <header className="max-w-3xl space-y-2">
         <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-500/10 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-cyan-300">
           <Sparkles className="h-3.5 w-3.5" />
@@ -38,6 +45,25 @@ export default function CategoryPage({ category }: { category: CategorySlug }) {
         </h1>
         <p className="text-slate-300 text-sm leading-relaxed">{meta.desc}</p>
       </header>
+
+      {/* Crate Key Rewards Preview Toolbar */}
+      {category === "crate-keys" && (
+        <div className="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-cyan-500/30 bg-slate-900/90 text-xs">
+          <div className="flex items-center gap-2 text-cyan-300 font-extrabold mr-2">
+            <KeyRound className="h-4 w-4" />
+            <span>PREVIEW CRATE DROP TABLES:</span>
+          </div>
+          {["vote", "rare", "epic", "legendary"].map((keyType) => (
+            <button
+              key={keyType}
+              onClick={() => setSelectedCrate(keyType)}
+              className="btn-outline px-3 py-1.5 text-xs uppercase font-black hover:border-cyan-400 hover:text-cyan-300"
+            >
+              {keyType} Key Rewards →
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Rank Upgrades Requirement Notice */}
       {category === "rank-upgrades" && (

@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { PromoMarquee } from "@/components/PromoMarquee";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
 import { CartProvider } from "@/lib/cart";
@@ -51,6 +52,7 @@ export default function App() {
       <AuthProvider>
         <CartProvider>
           <div className="flex min-h-full flex-col">
+            <PromoMarquee />
             <Navbar />
             <CartDrawer />
             <main className="flex-1">

@@ -7,6 +7,8 @@ import { MinecraftAccount } from "../models/MinecraftAccount.js";
 import { sanitizeUsername } from "../services/fulfillmentService.js";
 import { isDowngrade, getRankLevel } from "../services/rankService.js";
 
+import { createPaymentSession } from "../services/paymentService.js";
+
 export async function createOrder(req: Request, res: Response): Promise<void> {
   try {
     const { items, minecraftUsername, couponCode, platform } = req.body;
@@ -125,15 +127,28 @@ export async function createOrder(req: Request, res: Response): Promise<void> {
       currency: "USD",
       paymentStatus: "PENDING",
       fulfillmentStatus: "PENDING",
-      paymentProvider: "mock",
+      paymentProvider: process.env.PAYMENT_PROVIDER || "mock",
       idempotencyKey,
       couponCode: couponCode ? couponCode.trim().toUpperCase() : null,
+    });
+
+    const paymentResult = await createPaymentSession({
+      _id: order._id as any,
+      orderNumber: order.orderNumber,
+      total: order.total,
+      currency: order.currency,
+      minecraftUsername: order.minecraftUsername,
+      items: orderItems,
     });
 
     res.json({
       success: true,
       data: {
         order,
+        clientSecret: paymentResult.clientSecret,
+        checkoutUrl: paymentResult.checkoutUrl,
+        razorpayOrderId: paymentResult.razorpayOrderId,
+        provider: paymentResult.provider,
       },
     });
   } catch (error: any) {

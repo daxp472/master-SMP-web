@@ -5,6 +5,8 @@ import { Coupon } from "../models/Coupon.js";
 import { getPaymentProvider } from "../services/paymentProvider.js";
 import { enqueueOrderFulfillment } from "../services/fulfillmentService.js";
 
+import { sendDiscordPurchaseNotification } from "../services/discordService.js";
+
 export async function createPayment(req: Request, res: Response): Promise<void> {
   const { orderId } = req.body;
   const order = await Order.findById(orderId);
@@ -82,6 +84,16 @@ export async function confirmPayment(req: Request, res: Response): Promise<void>
 
   // Enqueue fulfillment worker
   await enqueueOrderFulfillment(String(order._id));
+
+  // Trigger Discord Purchase Notification
+  sendDiscordPurchaseNotification({
+    orderNumber: order.orderNumber,
+    minecraftUsername: order.minecraftUsername,
+    items: order.items.map((i) => ({ name: i.name, quantity: i.quantity })),
+    totalAmount: order.total,
+    currency: order.currency,
+    paymentProvider: order.paymentProvider,
+  }).catch((err) => console.error("[Discord Webhook Error]:", err));
 
   res.json({ success: true, data: order });
 }
